@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 import Header from './components/Header';
 import FilterSidebar from './components/FilterSideBar';
@@ -28,6 +28,45 @@ const App = () => {
   const [categories, setCategories] = useState([]);
   const [currentPage, setCurrentPage] = useState('home');
   const [orderHistory, setOrderHistory] = useState([]);
+  
+  // Refs to prevent duplicate toasts
+  const lastToastRef = useRef(null);
+  const toastTimeoutRef = useRef(null);
+
+  // Helper function to show toast with debouncing
+  const showToast = useCallback((message, type = 'info') => {
+    // Clear any pending toast
+    if (toastTimeoutRef.current) {
+      clearTimeout(toastTimeoutRef.current);
+    }
+    
+    // Prevent duplicate toasts
+    if (lastToastRef.current === message) {
+      return;
+    }
+    
+    toast.dismiss(); // Clear any existing toasts
+    
+    // Set a small delay to prevent rapid-fire toasts
+    toastTimeoutRef.current = setTimeout(() => {
+      toast[type](message);
+      lastToastRef.current = message;
+      
+      // Clear the last toast reference after the toast duration
+      setTimeout(() => {
+        lastToastRef.current = null;
+      }, 3000);
+    }, 100);
+  }, []);
+
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (toastTimeoutRef.current) {
+        clearTimeout(toastTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const checkUserSession = () => {
@@ -110,7 +149,7 @@ const App = () => {
       setOrderHistory(JSON.parse(userOrders));
     }
     
-    toast.success(`Welcome back, ${userData.name}!`);
+    showToast(`Welcome back, ${userData.name}!`, 'success');
   };
 
   const handleLogout = () => {
@@ -127,7 +166,7 @@ const App = () => {
     setCurrentPage('home');
     localStorage.removeItem('currentUser');
     
-    toast.info('Logged out successfully');
+    showToast('Logged out successfully', 'info');
   };
 
   const navigateToShop = () => setCurrentPage('shop');
@@ -135,26 +174,30 @@ const App = () => {
   const navigateToContact = () => setCurrentPage('contact');
   const navigateToProfile = () => setCurrentPage('profile');
 
-  const addToCart = (product) => {
+  const addToCart = useCallback((product) => {
     if (!isAuthenticated) {
-      toast.error('Please login to add items to cart');
+      showToast('Please login to add items to cart', 'error');
       return;
     }
 
     setCart(prevCart => {
       const existingItem = prevCart.find(item => item.id === product.id);
+      
       if (existingItem) {
-        toast.success('Item quantity updated in cart');
+        // Use setTimeout to ensure toast shows after state update
+        setTimeout(() => showToast('Item quantity updated in cart', 'success'), 0);
         return prevCart.map(item =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       }
-      toast.success('Item added to cart');
+      
+      // Use setTimeout to ensure toast shows after state update
+      setTimeout(() => showToast('Item added to cart', 'success'), 0);
       return [...prevCart, { ...product, quantity: 1 }];
     });
-  };
+  }, [isAuthenticated, showToast]);
 
   const updateQuantity = (productId, newQuantity) => {
     if (newQuantity === 0) {
@@ -170,27 +213,27 @@ const App = () => {
     }
   };
 
-  const removeFromCart = (productId) => {
+  const removeFromCart = useCallback((productId) => {
     setCart(prevCart => prevCart.filter(item => item.id !== productId));
-    toast.info('Item removed from cart');
-  };
+    setTimeout(() => showToast('Item removed from cart', 'info'), 0);
+  }, [showToast]);
 
   const toggleCart = () => {
     if (!isAuthenticated) {
-      toast.error('Please login to view cart');
+      showToast('Please login to view cart', 'error');
       return;
     }
     setIsCartOpen(!isCartOpen);
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = useCallback(() => {
     if (!isAuthenticated) {
-      toast.error('Please login to checkout');
+      showToast('Please login to checkout', 'error');
       return;
     }
     
     if (cart.length === 0) {
-      toast.warning('Your cart is empty');
+      showToast('Your cart is empty', 'warning');
       return;
     }
     
@@ -219,24 +262,24 @@ const App = () => {
     // Add order to history
     setOrderHistory(prev => [newOrder, ...prev]);
     
-    toast.success('Order placed successfully!');
+    setTimeout(() => showToast('Order placed successfully!', 'success'), 0);
     setCart([]);
     setIsCartOpen(false);
-  };
+  }, [isAuthenticated, cart, showToast]);
 
   const handleSearch = (term) => setSearchTerm(term);
   const handleCategoryChange = (category) => setSelectedCategory(category);
   const handlePriceChange = (price) => setPriceRange(price);
   const handleViewModeChange = (mode) => setViewMode(mode);
 
-  const handleToggleWishlist = (productId) => {
+  const handleToggleWishlist = useCallback((productId) => {
     if (!isAuthenticated) {
-      toast.error('Please login to add to wishlist');
+      showToast('Please login to add to wishlist', 'error');
       return;
     }
     console.log('Toggle wishlist for product:', productId);
-    toast.info('Wishlist feature coming soon!');
-  };
+    showToast('Wishlist feature coming soon!', 'info');
+  }, [isAuthenticated, showToast]);
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -264,6 +307,7 @@ const App = () => {
           pauseOnFocusLoss
           draggable
           pauseOnHover
+          limit={1}
         />
         <Auth onLogin={handleLogin} />
       </div>
@@ -282,6 +326,7 @@ const App = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
+        limit={1}
       />
       
       <Header 

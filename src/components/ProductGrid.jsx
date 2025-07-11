@@ -77,7 +77,7 @@ const ProductGrid = ({
                     )}
                   </div>
                   <button
-                    onClick={() => !isInCart && onAddToCart(product)}
+                    onClick={() => onAddToCart(product)}
                     disabled={isInCart}
                     className={`px-6 py-2 rounded-lg transition-colors duration-200 ${
                       isInCart 

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Heart, Star, ShoppingCart } from 'lucide-react';
-import { toast } from 'react-toastify';
 
 const ProductCard = ({ product, onAddToCart, onToggleWishlist, cartItems = [] }) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -16,9 +15,7 @@ const ProductCard = ({ product, onAddToCart, onToggleWishlist, cartItems = [] })
   const handleAddToCart = () => {
     if (!isInCart) {
       onAddToCart(product);
-      toast.success(`${product.title} added to cart!`, {
-        toastId: `add-to-cart-${product.id}`
-      });
+      // Removed toast from here - it's handled in the App component
     }
   };
   
