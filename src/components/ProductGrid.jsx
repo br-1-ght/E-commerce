@@ -41,7 +41,7 @@ const ProductGrid = ({
                 <img
                   src={product.image}
                   alt={product.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
               </div>
               <div className="flex-1 p-4 flex flex-col justify-between">
