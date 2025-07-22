@@ -11,8 +11,8 @@ const Auth = ({ onLogin }) => {
       if (storedUsers) {
         return JSON.parse(storedUsers);
       }
-      localStorage.setItem('mockUsers');
-      return;
+      localStorage.setItem('mockUsers', JSON.stringify([]));
+      return [];
     } catch (error) {
       console.error("Error initializing users:", error);
       return [];
@@ -54,7 +54,8 @@ const Auth = ({ onLogin }) => {
   const handleLogin = async (email, password) => {
     try {
       const user = await loginUser(email, password);
-      onLogin(user);
+      // Pass false for isNewUser since this is a login
+      onLogin(user, false);
     } catch (error) {
       throw error;
     }
@@ -63,7 +64,8 @@ const Auth = ({ onLogin }) => {
   const handleRegister = async (userData) => {
     try {
       const user = await registerUser(userData);
-      onLogin(user);
+      // Pass true for isNewUser since this is a new registration
+      onLogin(user, true);
     } catch (error) {
       throw error;
     }

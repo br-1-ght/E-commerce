@@ -4,8 +4,7 @@ class ProductService {
     try {
       const response = await fetch('https://fakestoreapi.com/products');
       const data = await response.json();
-      
-      // Extract unique categories
+
       const uniqueCategories = [...new Set(data.map(product => product.category))];
       
       return {
@@ -14,7 +13,7 @@ class ProductService {
       };
     } catch (error) {
       console.error('Error fetching products:', error);
-      throw error; // Re-throw the error to be handled by the caller
+      throw error;
     }
   }
 
@@ -22,7 +21,6 @@ class ProductService {
     const { searchTerm, selectedCategory, priceRange } = filters;
     let filtered = products;
 
-    // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(product =>
         product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -30,12 +28,10 @@ class ProductService {
       );
     }
 
-    // Filter by category
     if (selectedCategory) {
       filtered = filtered.filter(product => product.category === selectedCategory);
     }
 
-    // Filter by price range
     filtered = filtered.filter(product => product.price <= priceRange);
 
     return filtered;

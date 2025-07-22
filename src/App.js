@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-
 import Header from './components/Header';
 import FilterSidebar from './components/FilterSideBar';
 import ProductGrid from './components/ProductGrid';
@@ -9,13 +8,16 @@ import ContactUs from './components/ContactUs';
 import Auth from './components/services/Auth';
 import UserProfile from './components/Profile';
 import ProductService from './components/services/ProductService';
+import { ThemeProvider, useTheme } from './components/services/ThemeContext';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const App = () => {
+const AppContent = () => {
+  const { isDarkMode } = useTheme();
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [cart, setCart] = useState([]);
@@ -29,37 +31,30 @@ const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
   const [orderHistory, setOrderHistory] = useState([]);
   
-  // Refs to prevent duplicate toasts
   const lastToastRef = useRef(null);
   const toastTimeoutRef = useRef(null);
 
-  // Helper function to show toast with debouncing
   const showToast = useCallback((message, type = 'info') => {
-    // Clear any pending toast
     if (toastTimeoutRef.current) {
       clearTimeout(toastTimeoutRef.current);
     }
     
-    // Prevent duplicate toasts
     if (lastToastRef.current === message) {
       return;
     }
     
-    toast.dismiss(); // Clear any existing toasts
+    toast.dismiss();
     
-    // Set a small delay to prevent rapid-fire toasts
     toastTimeoutRef.current = setTimeout(() => {
       toast[type](message);
       lastToastRef.current = message;
       
-      // Clear the last toast reference after the toast duration
       setTimeout(() => {
         lastToastRef.current = null;
       }, 3000);
     }, 100);
   }, []);
 
-  // Cleanup timeouts on unmount
   useEffect(() => {
     return () => {
       if (toastTimeoutRef.current) {
@@ -76,11 +71,11 @@ const App = () => {
           const userData = JSON.parse(storedUser);
           setUser(userData);
           setIsAuthenticated(true);
+          setCurrentPage('shop');
           const userCart = localStorage.getItem(`cart_${userData.id}`);
           if (userCart) {
             setCart(JSON.parse(userCart));
           }
-          // Load user's order history
           const userOrders = localStorage.getItem(`orders_${userData.id}`);
           if (userOrders) {
             setOrderHistory(JSON.parse(userOrders));
@@ -103,7 +98,6 @@ const App = () => {
     }
   }, [cart, isAuthenticated, user]);
 
-  // Save order history whenever it changes
   useEffect(() => {
     if (isAuthenticated && user) {
       localStorage.setItem(`orders_${user.id}`, JSON.stringify(orderHistory));
@@ -133,9 +127,10 @@ const App = () => {
     setFilteredProducts(filtered);
   }, [products, searchTerm, selectedCategory, priceRange]);
 
-  const handleLogin = (userData) => {
+  const handleLogin = (userData, isNewUser = false) => {
     setUser(userData);
     setIsAuthenticated(true);
+    setShowAuthModal(false);
     localStorage.setItem('currentUser', JSON.stringify(userData));
     
     const userCart = localStorage.getItem(`cart_${userData.id}`);
@@ -143,17 +138,21 @@ const App = () => {
       setCart(JSON.parse(userCart));
     }
 
-    // Load user's order history
     const userOrders = localStorage.getItem(`orders_${userData.id}`);
     if (userOrders) {
       setOrderHistory(JSON.parse(userOrders));
     }
     
-    showToast(`Welcome back, ${userData.name}!`, 'success');
+    setCurrentPage('shop');
+    
+    if (isNewUser) {
+      showToast(`Welcome to Shopfinity, ${userData.name}! Account created successfully!`, 'success');
+    } else {
+      showToast(`Welcome back, ${userData.name}!`, 'success');
+    }
   };
 
   const handleLogout = () => {
-    // Save current cart and orders before logout
     if (user) {
       localStorage.setItem(`cart_${user.id}`, JSON.stringify(cart));
       localStorage.setItem(`orders_${user.id}`, JSON.stringify(orderHistory));
@@ -169,7 +168,14 @@ const App = () => {
     showToast('Logged out successfully', 'info');
   };
 
-  const navigateToShop = () => setCurrentPage('shop');
+  const navigateToShop = () => {
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      return;
+    }
+    setCurrentPage('shop');
+  };
+
   const navigateToHome = () => setCurrentPage('home');
   const navigateToContact = () => setCurrentPage('contact');
   const navigateToProfile = () => setCurrentPage('profile');
@@ -184,7 +190,6 @@ const App = () => {
       const existingItem = prevCart.find(item => item.id === product.id);
       
       if (existingItem) {
-        // Use setTimeout to ensure toast shows after state update
         setTimeout(() => showToast('Item quantity updated in cart', 'success'), 0);
         return prevCart.map(item =>
           item.id === product.id
@@ -192,8 +197,7 @@ const App = () => {
             : item
         );
       }
-      
-      // Use setTimeout to ensure toast shows after state update
+
       setTimeout(() => showToast('Item added to cart', 'success'), 0);
       return [...prevCart, { ...product, quantity: 1 }];
     });
@@ -237,14 +241,12 @@ const App = () => {
       return;
     }
     
-    // Calculate order totals
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const shipping = subtotal > 100 ? 0 : 10;
     const total = subtotal + shipping;
     
-    // Create new order
     const newOrder = {
-      id: Date.now().toString(), // Simple ID generation
+      id: Date.now().toString(),
       date: new Date().toLocaleDateString(),
       items: cart.map(item => ({
         id: item.id,
@@ -259,7 +261,6 @@ const App = () => {
       status: 'Processing'
     };
 
-    // Add order to history
     setOrderHistory(prev => [newOrder, ...prev]);
     
     setTimeout(() => showToast('Order placed successfully!', 'success'), 0);
@@ -285,37 +286,27 @@ const App = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${
+        isDarkMode ? 'bg-gray-900' : 'bg-gray-50'
+      }`}>
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <div className={`w-16 h-16 border-4 rounded-full animate-spin mx-auto mb-4 ${
+            isDarkMode 
+              ? 'border-blue-400 border-t-transparent' 
+              : 'border-blue-600 border-t-transparent'
+          }`}></div>
+          <p className={`${
+            isDarkMode ? 'text-gray-300' : 'text-gray-600'
+          }`}>Loading...</p>
         </div>
       </div>
     );
   }
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <ToastContainer 
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          limit={1}
-        />
-        <Auth onLogin={handleLogin} />
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`min-h-screen transition-colors duration-300 ${
+      isDarkMode ? 'bg-gray-900' : 'bg-gray-50'
+    }`}>
       <ToastContainer 
         position="top-right"
         autoClose={2000}
@@ -327,6 +318,8 @@ const App = () => {
         draggable
         pauseOnHover
         limit={1}
+        theme={isDarkMode ? 'dark' : 'light'}
+        className="!z-[10000]"
       />
       
       <Header 
@@ -393,7 +386,39 @@ const App = () => {
         onCheckout={handleCheckout}
         onToggleCart={toggleCart}
       />
+
+      {showAuthModal && (
+        <div className={`fixed inset-0 flex items-center justify-center z-[10000] p-4 ${
+          isDarkMode ? 'bg-black bg-opacity-60' : 'bg-black bg-opacity-50'
+        }`}>
+          <div className={`rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto transition-colors duration-300 ${
+            isDarkMode ? 'bg-gray-800' : 'bg-white'
+          }`}>
+            <div className="relative p-6">
+              <button
+                onClick={() => setShowAuthModal(false)}
+                className={`absolute top-4 right-4 transition-colors duration-200 ${
+                  isDarkMode ? 'text-gray-300 hover:text-white' : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <Auth onLogin={handleLogin} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
+  );
+};
+
+const App = () => {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 };
 

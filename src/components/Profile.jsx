@@ -1,7 +1,9 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import { User, Mail, Phone, MapPin, Calendar, Package, Heart, Edit2, Save, X, Eye, ShoppingBag } from 'lucide-react';
+import { useTheme } from './services/ThemeContext';
 
 const UserProfile = ({ user, onUpdateUser, orderHistory = [] }) => {
+  const { isDarkMode } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [editFormData, setEditFormData] = useState({
     name: user.name || '',
@@ -52,12 +54,20 @@ const UserProfile = ({ user, onUpdateUser, orderHistory = [] }) => {
   };
 
   const ProfileInfo = () => (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className={`rounded-lg shadow-md p-6 ${
+      isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'
+    }`}>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Profile Information</h2>
+        <h2 className={`text-2xl font-bold ${
+          isDarkMode ? 'text-white' : 'text-gray-900'
+        }`}>Profile Information</h2>
         <button
           onClick={isEditing ? handleSave : handleEditToggle}
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+            isDarkMode 
+              ? 'bg-blue-600 text-white hover:bg-blue-700' 
+              : 'bg-blue-600 text-white hover:bg-blue-700'
+          }`}
         >
           {isEditing ? (
             <>
@@ -75,8 +85,12 @@ const UserProfile = ({ user, onUpdateUser, orderHistory = [] }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <User className="w-4 h-4 inline mr-2" />
+          <label className={`block text-sm font-medium mb-2 ${
+            isDarkMode ? 'text-gray-300' : 'text-gray-700'
+          }`}>
+            <User className={`w-4 h-4 inline mr-2 ${
+              isDarkMode ? 'text-gray-300' : 'text-gray-700'
+            }`} />
             Full Name
           </label>
           {isEditing ? (
@@ -85,16 +99,26 @@ const UserProfile = ({ user, onUpdateUser, orderHistory = [] }) => {
               name="name"
               value={editFormData.name}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+                isDarkMode 
+                  ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+              }`}
             />
           ) : (
-            <p className="text-gray-900 font-medium">{user.name || 'Not provided'}</p>
+            <p className={`font-medium ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            }`}>{user.name || 'Not provided'}</p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <Mail className="w-4 h-4 inline mr-2" />
+          <label className={`block text-sm font-medium mb-2 ${
+            isDarkMode ? 'text-gray-300' : 'text-gray-700'
+          }`}>
+            <Mail className={`w-4 h-4 inline mr-2 ${
+              isDarkMode ? 'text-gray-300' : 'text-gray-700'
+            }`} />
             Email Address
           </label>
           {isEditing ? (
@@ -103,16 +127,26 @@ const UserProfile = ({ user, onUpdateUser, orderHistory = [] }) => {
               name="email"
               value={editFormData.email}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+                isDarkMode 
+                  ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+              }`}
             />
           ) : (
-            <p className="text-gray-900 font-medium">{user.email}</p>
+            <p className={`font-medium ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            }`}>{user.email}</p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <Phone className="w-4 h-4 inline mr-2" />
+          <label className={`block text-sm font-medium mb-2 ${
+            isDarkMode ? 'text-gray-300' : 'text-gray-700'
+          }`}>
+            <Phone className={`w-4 h-4 inline mr-2 ${
+              isDarkMode ? 'text-gray-300' : 'text-gray-700'
+            }`} />
             Phone Number
           </label>
           {isEditing ? (
@@ -121,17 +155,27 @@ const UserProfile = ({ user, onUpdateUser, orderHistory = [] }) => {
               name="phone"
               value={editFormData.phone}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+                isDarkMode 
+                  ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+              }`}
               placeholder="Enter phone number"
             />
           ) : (
-            <p className="text-gray-900 font-medium">{user.phone || 'Not provided'}</p>
+            <p className={`font-medium ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            }`}>{user.phone || 'Not provided'}</p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <Calendar className="w-4 h-4 inline mr-2" />
+          <label className={`block text-sm font-medium mb-2 ${
+            isDarkMode ? 'text-gray-300' : 'text-gray-700'
+          }`}>
+            <Calendar className={`w-4 h-4 inline mr-2 ${
+              isDarkMode ? 'text-gray-300' : 'text-gray-700'
+            }`} />
             Date of Birth
           </label>
           {isEditing ? (
@@ -140,16 +184,26 @@ const UserProfile = ({ user, onUpdateUser, orderHistory = [] }) => {
               name="dateOfBirth"
               value={editFormData.dateOfBirth}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+                isDarkMode 
+                  ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+              }`}
             />
           ) : (
-            <p className="text-gray-900 font-medium">{user.dateOfBirth || 'Not provided'}</p>
+            <p className={`font-medium ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            }`}>{user.dateOfBirth || 'Not provided'}</p>
           )}
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <MapPin className="w-4 h-4 inline mr-2" />
+          <label className={`block text-sm font-medium mb-2 ${
+            isDarkMode ? 'text-gray-300' : 'text-gray-700'
+          }`}>
+            <MapPin className={`w-4 h-4 inline mr-2 ${
+              isDarkMode ? 'text-gray-300' : 'text-gray-700'
+            }`} />
             Address
           </label>
           {isEditing ? (
@@ -158,11 +212,17 @@ const UserProfile = ({ user, onUpdateUser, orderHistory = [] }) => {
               value={editFormData.address}
               onChange={handleInputChange}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+                isDarkMode 
+                  ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+              }`}
               placeholder="Enter your address"
             />
           ) : (
-            <p className="text-gray-900 font-medium">{user.address || 'Not provided'}</p>
+            <p className={`font-medium ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            }`}>{user.address || 'Not provided'}</p>
           )}
         </div>
       </div>
@@ -171,7 +231,11 @@ const UserProfile = ({ user, onUpdateUser, orderHistory = [] }) => {
         <div className="mt-6 flex space-x-4">
           <button
             onClick={handleEditToggle}
-            className="flex items-center space-x-2 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+              isDarkMode 
+                ? 'bg-gray-600 text-white hover:bg-gray-700' 
+                : 'bg-gray-500 text-white hover:bg-gray-600'
+            }`}
           >
             <X className="w-4 h-4" />
             <span>Cancel</span>
@@ -182,57 +246,93 @@ const UserProfile = ({ user, onUpdateUser, orderHistory = [] }) => {
   );
 
   const OrderHistory = () => (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className={`rounded-lg shadow-md p-6 ${
+      isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'
+    }`}>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Order History</h2>
-        <div className="text-sm text-gray-500">
+        <h2 className={`text-2xl font-bold ${
+          isDarkMode ? 'text-white' : 'text-gray-900'
+        }`}>Order History</h2>
+        <div className={`text-sm ${
+          isDarkMode ? 'text-gray-400' : 'text-gray-500'
+        }`}>
           {orderHistory.length} {orderHistory.length === 1 ? 'order' : 'orders'}
         </div>
       </div>
       
       {orderHistory.length === 0 ? (
         <div className="text-center py-8">
-          <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-500">No orders yet</p>
-          <p className="text-sm text-gray-400">Your order history will appear here</p>
+          <Package className={`w-16 h-16 mx-auto mb-4 ${
+            isDarkMode ? 'text-gray-500' : 'text-gray-400'
+          }`} />
+          <p className={`${
+            isDarkMode ? 'text-gray-300' : 'text-gray-500'
+          }`}>No orders yet</p>
+          <p className={`text-sm ${
+            isDarkMode ? 'text-gray-400' : 'text-gray-400'
+          }`}>Your order history will appear here</p>
         </div>
       ) : (
         <div className="space-y-4">
           {orderHistory.map((order) => (
-            <div key={order.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div 
+              key={order.id} 
+              className={`border rounded-lg p-4 hover:shadow-md transition-shadow ${
+                isDarkMode ? 'border-gray-700' : 'border-gray-200'
+              }`}
+            >
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <p className="font-semibold text-gray-900">Order #{order.id}</p>
-                  <p className="text-sm text-gray-500">{order.date}</p>
+                  <p className={`font-semibold ${
+                    isDarkMode ? 'text-white' : 'text-gray-900'
+                  }`}>Order #{order.id}</p>
+                  <p className={`text-sm ${
+                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                  }`}>{order.date}</p>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    order.status === 'Processing' ? 'bg-yellow-100 text-yellow-800' :
-                    order.status === 'Shipped' ? 'bg-blue-100 text-blue-800' :
-                    order.status === 'Delivered' ? 'bg-green-100 text-green-800' :
-                    'bg-gray-100 text-gray-800'
+                    order.status === 'Processing' 
+                      ? isDarkMode ? 'bg-yellow-900 text-yellow-300' : 'bg-yellow-100 text-yellow-800'
+                      : order.status === 'Shipped' 
+                      ? isDarkMode ? 'bg-blue-900 text-blue-300' : 'bg-blue-100 text-blue-800'
+                      : order.status === 'Delivered' 
+                      ? isDarkMode ? 'bg-green-900 text-green-300' : 'bg-green-100 text-green-800'
+                      : isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-800'
                   }`}>
                     {order.status}
                   </span>
                   <button
                     onClick={() => setSelectedOrder(selectedOrder === order.id ? null : order.id)}
-                    className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                    className={`p-1 rounded-full transition-colors ${
+                      isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
+                    }`}
                   >
-                    <Eye className="w-4 h-4 text-gray-500" />
+                    <Eye className={`w-4 h-4 ${
+                      isDarkMode ? 'text-gray-300' : 'text-gray-500'
+                    }`} />
                   </button>
                 </div>
               </div>
               
               <div className="flex justify-between items-center">
-                <div className="text-sm text-gray-600">
+                <div className={`text-sm ${
+                  isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                }`}>
                   {order.items.length} {order.items.length === 1 ? 'item' : 'items'}
                 </div>
-                <p className="text-lg font-bold text-gray-900">${order.total.toFixed(2)}</p>
+                <p className={`text-lg font-bold ${
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                }`}>${order.total.toFixed(2)}</p>
               </div>
               
               {selectedOrder === order.id && (
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <h4 className="font-medium text-gray-900 mb-3">Order Details:</h4>
+                <div className={`mt-4 pt-4 border-t ${
+                  isDarkMode ? 'border-gray-700' : 'border-gray-200'
+                }`}>
+                  <h4 className={`font-medium ${
+                    isDarkMode ? 'text-white' : 'text-gray-900'
+                  }`}>Order Details:</h4>
                   <div className="space-y-3">
                     {order.items.map((item) => (
                       <div key={item.id} className="flex items-center space-x-3">
@@ -242,30 +342,48 @@ const UserProfile = ({ user, onUpdateUser, orderHistory = [] }) => {
                           className="w-12 h-12 object-cover rounded"
                         />
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-900">{item.title}</p>
-                          <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
+                          <p className={`text-sm font-medium ${
+                            isDarkMode ? 'text-white' : 'text-gray-900'
+                          }`}>{item.title}</p>
+                          <p className={`text-xs ${
+                            isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                          }`}>Qty: {item.quantity}</p>
                         </div>
-                        <p className="text-sm font-medium text-gray-900">
+                        <p className={`text-sm font-medium ${
+                          isDarkMode ? 'text-white' : 'text-gray-900'
+                        }`}>
                           ${(item.price * item.quantity).toFixed(2)}
                         </p>
                       </div>
                     ))}
                   </div>
                   
-                  <div className="mt-4 pt-3 border-t border-gray-100 space-y-1">
+                  <div className={`mt-4 pt-3 border-t space-y-1 ${
+                    isDarkMode ? 'border-gray-600' : 'border-gray-100'
+                  }`}>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Subtotal:</span>
+                      <span className={`${
+                        isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                      }`}>Subtotal:</span>
                       <span className="font-medium">${order.subtotal.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Shipping:</span>
+                      <span className={`${
+                        isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                      }`}>Shipping:</span>
                       <span className="font-medium">
                         {order.shipping === 0 ? 'Free' : `$${order.shipping.toFixed(2)}`}
                       </span>
                     </div>
-                    <div className="flex justify-between text-base font-semibold border-t pt-1">
-                      <span className="text-gray-900">Total:</span>
-                      <span className="text-gray-900">${order.total.toFixed(2)}</span>
+                    <div className={`flex justify-between text-base font-semibold border-t pt-1 ${
+                      isDarkMode ? 'border-gray-600' : 'border-gray-100'
+                    }`}>
+                      <span className={`${
+                        isDarkMode ? 'text-white' : 'text-gray-900'
+                      }`}>Total:</span>
+                      <span className={`${
+                        isDarkMode ? 'text-white' : 'text-gray-900'
+                      }`}>${order.total.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
@@ -278,19 +396,31 @@ const UserProfile = ({ user, onUpdateUser, orderHistory = [] }) => {
   );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className={`max-w-6xl mx-auto px-4 py-8 ${
+      isDarkMode ? 'bg-gray-900' : 'bg-gray-50'
+    } transition-colors duration-300`}>
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+      <div className={`rounded-lg shadow-md p-6 mb-8 ${
+        isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'
+      }`}>
         <div className="flex items-center space-x-4">
-          <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
+          <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
+            isDarkMode ? 'bg-blue-600' : 'bg-blue-600'
+          }`}>
             <span className="text-white text-xl font-bold">
               {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
             </span>
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{user.name || 'User'}</h1>
-            <p className="text-gray-600">{user.email}</p>
-            <p className="text-sm text-gray-500">
+            <h1 className={`text-3xl font-bold ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            }`}>{user.name || 'User'}</h1>
+            <p className={`${
+              isDarkMode ? 'text-gray-300' : 'text-gray-600'
+            }`}>{user.email}</p>
+            <p className={`text-sm ${
+              isDarkMode ? 'text-gray-400' : 'text-gray-500'
+            }`}>
               Member since {new Date(user.createdAt || Date.now()).toLocaleDateString()}
             </p>
           </div>
@@ -299,40 +429,70 @@ const UserProfile = ({ user, onUpdateUser, orderHistory = [] }) => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className={`rounded-lg shadow-md p-6 ${
+          isDarkMode ? 'bg-gray-800' : 'bg-white'
+        }`}>
           <div className="flex items-center">
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <Package className="w-6 h-6 text-blue-600" />
+            <div className={`p-3 rounded-lg ${
+              isDarkMode ? 'bg-blue-900' : 'bg-blue-100'
+            }`}>
+              <Package className={`w-6 h-6 ${
+                isDarkMode ? 'text-blue-400' : 'text-blue-600'
+              }`} />
             </div>
             <div className="ml-4">
-              <p className="text-sm text-gray-600">Total Orders</p>
-              <p className="text-2xl font-bold text-gray-900">{orderHistory.length}</p>
+              <p className={`text-sm ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+              }`}>Total Orders</p>
+              <p className={`text-2xl font-bold ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}>{orderHistory.length}</p>
             </div>
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className={`rounded-lg shadow-md p-6 ${
+          isDarkMode ? 'bg-gray-800' : 'bg-white'
+        }`}>
           <div className="flex items-center">
-            <div className="p-3 bg-green-100 rounded-lg">
-              <ShoppingBag className="w-6 h-6 text-green-600" />
+            <div className={`p-3 rounded-lg ${
+              isDarkMode ? 'bg-green-900' : 'bg-green-100'
+            }`}>
+              <ShoppingBag className={`w-6 h-6 ${
+                isDarkMode ? 'text-green-400' : 'text-green-600'
+              }`} />
             </div>
             <div className="ml-4">
-              <p className="text-sm text-gray-600">Total Spent</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className={`text-sm ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+              }`}>Total Spent</p>
+              <p className={`text-2xl font-bold ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}>
                 ${orderHistory.reduce((sum, order) => sum + order.total, 0).toFixed(2)}
               </p>
             </div>
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className={`rounded-lg shadow-md p-6 ${
+          isDarkMode ? 'bg-gray-800' : 'bg-white'
+        }`}>
           <div className="flex items-center">
-            <div className="p-3 bg-purple-100 rounded-lg">
-              <Heart className="w-6 h-6 text-purple-600" />
+            <div className={`p-3 rounded-lg ${
+              isDarkMode ? 'bg-purple-900' : 'bg-purple-100'
+            }`}>
+              <Heart className={`w-6 h-6 ${
+                isDarkMode ? 'text-purple-400' : 'text-purple-600'
+              }`} />
             </div>
             <div className="ml-4">
-              <p className="text-sm text-gray-600">Items Purchased</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className={`text-sm ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+              }`}>Items Purchased</p>
+              <p className={`text-2xl font-bold ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}>
                 {orderHistory.reduce((sum, order) => sum + order.items.reduce((itemSum, item) => itemSum + item.quantity, 0), 0)}
               </p>
             </div>
@@ -341,7 +501,9 @@ const UserProfile = ({ user, onUpdateUser, orderHistory = [] }) => {
       </div>
 
       <div className="mb-8">
-        <div className="border-b border-gray-200">
+        <div className={`border-b ${
+          isDarkMode ? 'border-gray-700' : 'border-gray-200'
+        }`}>
           <nav className="flex space-x-8">
             {[
               { id: 'profile', label: 'Profile', icon: User },
@@ -350,13 +512,21 @@ const UserProfile = ({ user, onUpdateUser, orderHistory = [] }) => {
               <button
                 key={id}
                 onClick={() => setActiveTab(id)}
-                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm ${
+                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                   activeTab === id
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? isDarkMode 
+                      ? 'border-blue-500 text-blue-400' 
+                      : 'border-blue-500 text-blue-600'
+                    : isDarkMode 
+                      ? 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className={`w-4 h-4 ${
+                  activeTab === id
+                    ? isDarkMode ? 'text-blue-400' : 'text-blue-600'
+                    : isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                }`} />
                 <span>{label}</span>
               </button>
             ))}
